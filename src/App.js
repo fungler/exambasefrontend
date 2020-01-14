@@ -260,9 +260,45 @@ const DriverList = ({ listDrivers }) => {
 };
 
 const TruckList = ({ listTrucks }) => {
+
+  const [truckInfo, setTruckInfo] = useState({id: "", name: "", capacity: ""});
+  const [currTruckInfo, setCurrTruckInfo] = useState({id: "", name: "", capacity: ""});
+
+  const handleChange = event => {
+    setCurrTruckInfo({ ...currTruckInfo, [event.target.id]: event.target.value });
+  };
+
+  const handleSubmit = event => {
+    event.preventDefault();
+    facade.fetchEditTruck(currTruckInfo);
+    setCurrTruckInfo({... currTruckInfo, name: "", capacity: ""});
+  }
+
+  const handleDelete = event => {
+    event.preventDefault();
+    facade.fetchDeleteTruck(currTruckInfo);
+    setCurrTruckInfo({id: "", name: "", capacity: ""});
+  }
+
+  const handleCreate = event => {
+    event.preventDefault();
+    facade.fetchCreateTruck({id: 0, name: currTruckInfo.name, capacity: currTruckInfo.capacity});
+    setCurrTruckInfo({id: "", name: "", capacity: ""});
+  }
+  const selectTruck = event =>
+  {
+    event.preventDefault();
+    setCurrTruckInfo({... currTruckInfo, id: event.target.id});
+  } 
+
   return (
     <div>
+      <hr></hr>
       <h3>Truck data</h3>
+      <h5>Selected info:</h5>
+      <h6>ID: {currTruckInfo.id}</h6>
+      <h6>Name: {currTruckInfo.name}</h6>
+      <h6>Capacity: {currTruckInfo.capacity}</h6>
       <table className="table table-hover">
         <thead>
           <tr>
@@ -275,22 +311,57 @@ const TruckList = ({ listTrucks }) => {
           {listTrucks.map((item, index) => {
             return (
               <tr key={index}>
-                <td>{item.id}</td>
-                <td>{item.name}</td>
-                <td>{item.capacity}</td>
+                <td onClick={selectTruck} id={item.id}>{item.id}</td>
+                <td id={item.name}>{item.name}</td>
+                <td id={item.capacity}>{item.capacity}</td>
               </tr>
             );
           })}
         </tbody>
       </table>
+      <h3>{truckInfo.id}</h3>
+      <input className="form-control selector"
+          id="name"
+          value={currTruckInfo.name}
+          onChange={handleChange}
+          placeholder="Name"
+        ></input>
+          <input type="number" className="form-control selector"
+          id="capacity"
+          value={currTruckInfo.capacity}
+          onChange={handleChange}
+          placeholder="Capacity"
+        ></input>
+        <button className="btn btn-success aps" onClick={handleSubmit}>Edit</button>
+        <button className="btn btn-primary aps" onClick={handleCreate}>Create</button>
+        <button className="btn btn-danger aps" onClick={handleDelete}>Delete</button>
     </div>
   );
 };
 
 const DeliveryList = ({ listDelivery }) => {
+
+  const [currDelInfo, setCurrDelInfo] = useState({id: "", shipdate: "", fromLocation: "", destination: ""});
+  const selectDel = event =>
+  {
+    event.preventDefault();
+    setCurrDelInfo({... currDelInfo, id: event.target.id});
+  } 
+
+/*  const handleChange = event => {
+    setCurrDelInfo({ ...currDelInfo, [event.target.id]: event.target.value });
+  };*/
+
+  const handleSubmit = event => {
+    event.preventDefault();
+    setCurrDelInfo({... currDelInfo, shipDate: "", fromLocation: "", destination: ""});
+  }
+
   return (
     <div>
+      <hr></hr>
       <h3>Delivery data</h3>
+      <h5>Selected delivery: {currDelInfo.id}</h5>
       <table className="table table-hover">
         <thead>
           <tr>
@@ -304,7 +375,7 @@ const DeliveryList = ({ listDelivery }) => {
           {listDelivery.map((item, index) => {
             return (
               <tr key={index}>
-                <td>{item.id}</td>
+                <td onClick={selectDel} id={item.id}>{item.id}</td>
                 <td>{item.shipDate}</td>
                 <td>{item.fromLocation}</td>
                 <td>{item.destination}</td>
@@ -313,6 +384,7 @@ const DeliveryList = ({ listDelivery }) => {
           })}
         </tbody>
       </table>
+      <button className="btn btn-success aps" onClick={handleSubmit}>Get details</button>
     </div>
   );
 };

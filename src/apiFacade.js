@@ -116,6 +116,25 @@ const fetchCreateDriver = driverName => {
   return fetch(URL + "/api/delivery/createdriver", options).then(handleHttpErrors);
 }
 
+const fetchEditTruck = truckDTO => {
+  const options = makeOptions("PUT", true, truckDTO);
+  return fetch(URL + "/api/delivery/edittruck/" + truckDTO.id, options).then(handleHttpErrors);
+}
+
+const fetchDeleteTruck = truckDTO => {
+  const options = makeOptions("DELETE", true, truckDTO);
+  return fetch(URL + "/api/delivery/deletetruck/" + truckDTO.id, options).then(handleHttpErrors);
+}
+
+const fetchCreateTruck = truckInfo => {
+  const options = makeOptions("POST", true, truckInfo);
+  return fetch(URL + "/api/delivery/createtruck", options).then(handleHttpErrors);
+}
+
+const fetchDelDetails = id => {
+  const options = makeOptions("GET", true, id);
+  return fetch(URL + "/api/delivery/getdeliverydetails/" + id, options).then(handleHttpErrors);
+}
   return {
     makeOptions,
     setToken,
@@ -130,7 +149,11 @@ const fetchCreateDriver = driverName => {
     fetchDeliveryData,
     fetchEditDriver,
     fetchDeleteDriver,
-    fetchCreateDriver
+    fetchCreateDriver,
+    fetchEditTruck,
+    fetchDeleteTruck,
+    fetchCreateTruck,
+    fetchDelDetails
   };
 }
 const facade = apiFacade();
