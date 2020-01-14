@@ -52,13 +52,15 @@ function LogIn({ login }) {
     });
   };
   return (
-    <div className="container">
-      <h2>Login</h2>
-      <form onSubmit={performLogin} onChange={onChange}>
-        <input placeholder="User Name" id="username" />
-        <input placeholder="Password" id="password" />
-        <button>Login</button>
-      </form>
+    <div className="data-wrapper">
+      <div className="info-box">
+        <h2 className="headline">Login</h2>
+        <form onSubmit={performLogin} onChange={onChange}>
+          <input className="form-control" placeholder="User Name" id="username" />
+          <input type="password" className="form-control" placeholder="Password" id="password" />
+          <button id="login-btn" className="btn btn-dark">Login</button>
+        </form>
+      </div>
     </div>
   );
 }
@@ -84,8 +86,8 @@ const Header = () => {
           </NavLink>
         </li>
         <li>
-          <NavLink activeClassName="active" to="/people">
-            People
+          <NavLink activeClassName="active" to="/getallinfo">
+            Data
           </NavLink>
         </li>
         <li>
@@ -127,8 +129,8 @@ const Content = ({ logout  }) => {
       <Route path="/home">
         <Home />
       </Route>
-      <Route path="/people">
-        <People />
+      <Route path="/getallinfo">
+        <GetAllInfo />
       </Route>
       <Route exact path="/">
         <App />
@@ -138,7 +140,8 @@ const Content = ({ logout  }) => {
       </Route>
       <Route path="/UserInfo">
         <UserInfo />
-      </Route>
+      </Route>      
+
       <Route path="*">
         <NoMatch />
       </Route>
@@ -155,44 +158,126 @@ function Home() {
   }, []);
 
   return (
-    <div className="container">
-      <h2>Data Received from server</h2>
-      <h3>{dataFromServer}</h3>
+    <div className="bscon container">
+      <h2 className="centered-text">Data Received from server</h2>
+      <h3 className="centered-text">{dataFromServer}</h3>
     </div>
   );
 }
 
-const People = () => {
-  const [listPeople, setListPeople] = useState([]);
+const GetAllInfo = () => {
+
+  const [listDrivers, setListDrivers] = useState([]);
+  const [listTrucks, setListTrucks] = useState([]);
+  const [listDelivery, setListDelivery] = useState([]);
+
   useEffect(() => {
-    facade.fetchPeople().then(res => setListPeople(res));
-  }, []);
+    facade.fetchDriverData().then(res => setListDrivers(res));
+    facade.fetchTruckData().then(res => setListTrucks(res));
+    facade.fetchDeliveryData().then(res => setListDelivery(res));
+  }, [listDrivers]);
+  
+
   return (
-    <div className="container">
-      <h2>People</h2>
-      <p>{JSON.stringify(listPeople)}</p>
-      <PeopleData listPeople={listPeople} />
+    <div className="bscon container">
+      <DriverList listDrivers={listDrivers} />
+      <TruckList listTrucks={listTrucks} />
+      <DeliveryList listDelivery={listDelivery} />
     </div>
   );
 };
-const PeopleData = ({ listPeople }) => {
+
+const DriverList = ({ listDrivers }) => {
+
+  const [currInput, setCurrInput] = useState({id: "", name: ""});
+  const [driverInfo, setDriverInfo] = useState({id: "", name: ""});
+
+  const handleChange = event => {
+    setCurrInput({ ...currInput, [event.target.id]: event.target.value });
+  };
+
+  const handleSubmit = event => {
+    event.preventDefault();
+    facade.fetchEditDriver(currInput);
+    setCurrInput({... currInput, name: ""});
+  }
+
+  const handleDelete = event => {
+    event.preventDefault();
+    facade.fetchDeleteDriver(currInput);
+    setCurrInput({... currInput, name: ""});
+  }
+
+  const handleCreate = event => {
+    event.preventDefault();
+    facade.fetchCreateDriver(currInput.name);
+    setCurrInput({... currInput, name: ""});
+  }
+
+  const toggleEditDriver = event => {
+    event.preventDefault();
+
+    setCurrInput({... currInput, id: event.target.id});
+    setDriverInfo({id: event.target.id, name: event.target.value});
+  }
+
   return (
     <div>
-      <table className="table">
+        <div>
+        <h3>Driver data</h3>
+        <table className="table table-hover">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>NAME</th>
+            </tr>
+          </thead>
+          <tbody>
+            {listDrivers.map((item, index) => {
+              return (
+                <tr onClick={toggleEditDriver} key={index}>
+                  <td id={item.id}>{item.id}</td>
+                  <td value={item.name}>{item.name}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+        <h3>{driverInfo.id}</h3>
+          <input className="form-control selector"
+          id="name"
+          value={currInput.name}
+          onChange={handleChange}
+          placeholder="Name"
+        ></input>
+        <button className="btn btn-success aps" onClick={handleSubmit}>Edit</button>
+        <button className="btn btn-primary aps" onClick={handleCreate}>Create</button>
+        <button className="btn btn-danger aps" onClick={handleDelete}>Delete</button>
+      </div>
+    </div>
+
+  );
+};
+
+const TruckList = ({ listTrucks }) => {
+  return (
+    <div>
+      <h3>Truck data</h3>
+      <table className="table table-hover">
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Height</th>
-            <th>Gender</th>
+            <th>ID</th>
+            <th>NAME</th>
+            <th>CAPACITY</th>
           </tr>
         </thead>
         <tbody>
-          {listPeople.map((person, index) => {
+          {listTrucks.map((item, index) => {
             return (
               <tr key={index}>
-                <td>{person.name}</td>
-                <td>{person.height}</td>
-                <td>{person.gender}</td>
+                <td>{item.id}</td>
+                <td>{item.name}</td>
+                <td>{item.capacity}</td>
               </tr>
             );
           })}
@@ -201,94 +286,37 @@ const PeopleData = ({ listPeople }) => {
     </div>
   );
 };
-/*const ReadMe = () => {
+
+const DeliveryList = ({ listDelivery }) => {
   return (
     <div>
-      <h1>Setup everything:</h1>
-      <h3>Backend</h3>
-      <h3>Clone / setup</h3>
-      <ul>
-        <li>Clone this project</li>
-        <li>Delete the .git folder and use "git init"</li>
-        <li>Create your OWN repository for this project on github</li>
-        <li>
-          Go to travis and add your new repository by "flipping the switch"
-          (Synchronize if now shown)
-        </li>
-        <li>
-          Add credentials: "REMOTE_USER" + "script_user" and "REMOTE_PW" +
-          password (values can be found in your "my-bootstrap.sh")
-        </li>
-        <li>Commit and Push your code to this repository</li>
-        <li>
-          Create databases by either only creating these 2 exacly as they are:
-          CA3 CA3_test
-        </li>
-        <li>
-          or choose your own name for db but then you will have to change the
-          following files:
-        </li>
-        <ul>
-          <li>Travis.yml: Line 40</li>
-          <li>
-            Other Sources: src/main/resources: : config.properties: Change db
-            name at line 17 and 21.
-          </li>
-        </ul>
-        <li>run "mvn clean test" in terminal: fix problems if any appears.</li>
-      </ul>
-      <h3>Backend Deploy</h3>
-      <ul>
-        <li>
-          Change the remote.server url to your own domain/droplet Project Files:
-          Pom.xml: remote.server>https://leafmight.dk/manager/text ...
-        </li>
-        <li>
-          Run "ssh DropletUserName@domain" followed by "sudo nano
-          /opt/tomcat/bin/setenv.sh"
-        </li>
-        <li>Change USER, PW and CONNECTION(startcode) to your own values:</li>
-        <p>export DEPLOYED="DEV_ON_DIGITAL_OCEAN"</p>
-        <p>export USER="YOUR_DB_USER"</p>
-        <p>export PW="YOUR_DB_PASSWORD"</p>
-        <p>export CONNECTION_STR="jdbc:mysql://localhost:3306/startcode"</p>
-        <li>Save file: "cntrl + x" and "Enter".</li>
-        <li>Restart tomcat "sudo systemctl restart tomcat".</li>
-        <li>
-          You can run the following with your own user / pw info: mvn clean test
-          -Dremote.user=script_user -Dremote.password=PW_FOR_script_user
-          tomcat7:deploy
-        </li>
-        <li>
-          If everything was fine the project should be deployed to your droplet,
-          ready to use with the remote database.
-        </li>
-        <li>
-          Otherwise you should be able to just commit and push changes to github
-          and travis should deploy it for you.
-        </li>
-      </ul>
-      <br></br>
-      <h2>Frontend</h2>
-      <h3>Change</h3>
-      <ul>
-        <li>Clone this repository</li>
-        <li>Open project in Visual Studio Code</li>
-        <li>Change url at the top of apiFacade to your own domain name.</li>
-        <li>Navigate into the folder via terminal</li>
-        <li>Run: "npm install react-router-dom", "npm start"</li>
-      </ul>
-      <h3>Deploy Frontend</h3>
-      <ul>
-        <li>Remember to change URL's from local to the domain</li>
-        <li>Run: "npm run build".</li>
-        <li>Run: "sudo npm install -g surge".</li>
-        <li>Run: "surge --project ./build --domain DOMAIN_NAME.surge.sh".</li>
-        <li>Enter email and password.</li>
-      </ul>
+      <h3>Delivery data</h3>
+      <table className="table table-hover">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>SHIPDATE</th>
+            <th>FROM</th>
+            <th>TO</th>
+          </tr>
+        </thead>
+        <tbody>
+          {listDelivery.map((item, index) => {
+            return (
+              <tr key={index}>
+                <td>{item.id}</td>
+                <td>{item.shipDate}</td>
+                <td>{item.fromLocation}</td>
+                <td>{item.destination}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
     </div>
   );
-};*/
+};
+
 const Logout = ({ logout }) => {
   return (
     <div className="container">

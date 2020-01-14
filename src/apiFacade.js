@@ -1,5 +1,6 @@
 //const URL = "http://localhost:8080/securitystarter";
-const URL = "https://martindoi.dk/exambase";
+//const URL = "https://martindoi.dk/exambase";
+const URL = "http://localhost:8080/exambase";
 
 function handleHttpErrors(res) {
   if (!res.ok) {
@@ -76,6 +77,7 @@ function apiFacade() {
     }
     return opts;
   };
+
   const fetchData = () => {
     const options = makeOptions("GET", true); //True add's the token
     if (getTokenInfo().roles === "admin") {
@@ -83,10 +85,37 @@ function apiFacade() {
     }
     return fetch(URL + "/api/info/user", options).then(handleHttpErrors);
   };
-  const fetchPeople = () => {
-    const options = makeOptions("GET", true); //True add's the token
-    return fetch(URL + "/api/info/people", options).then(handleHttpErrors);
-  };
+
+const fetchDriverData = () => {
+  const options = makeOptions("GET", true);
+  return fetch(URL + "/api/delivery/alldrivers", options).then(handleHttpErrors);
+}
+
+const fetchTruckData = () => {
+  const options = makeOptions("GET", true);
+  return fetch(URL + "/api/delivery/alltrucks", options).then(handleHttpErrors);
+}
+
+const fetchDeliveryData = () => {
+  const options = makeOptions("GET", true);
+  return fetch(URL + "/api/delivery/alldeliveries", options).then(handleHttpErrors);
+}
+
+const fetchEditDriver = driverDTO => {
+  const options = makeOptions("PUT", true, driverDTO);
+  return fetch(URL + "/api/delivery/editdriver/" + driverDTO.id, options).then(handleHttpErrors);
+}
+
+const fetchDeleteDriver = driverDTO => {
+  const options = makeOptions("DELETE", true, driverDTO);
+  return fetch(URL + "/api/delivery/deletedriver/" + driverDTO.id, options).then(handleHttpErrors);
+}
+
+const fetchCreateDriver = driverName => {
+  const options = makeOptions("POST", true, driverName);
+  return fetch(URL + "/api/delivery/createdriver", options).then(handleHttpErrors);
+}
+
   return {
     makeOptions,
     setToken,
@@ -95,8 +124,13 @@ function apiFacade() {
     login,
     logout,
     fetchData,
-    fetchPeople,
-    getTokenInfo
+    getTokenInfo,
+    fetchDriverData,
+    fetchTruckData,
+    fetchDeliveryData,
+    fetchEditDriver,
+    fetchDeleteDriver,
+    fetchCreateDriver
   };
 }
 const facade = apiFacade();

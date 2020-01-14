@@ -17,6 +17,70 @@
   color: white;
 }
 
+body {
+  background: rgb(56, 56, 56) !important;
+}
+
 .App-link {
   color: #09d3ac;
+}
+
+#login-text{
+  text-align: center;
+  padding-top: 10pt;
+}
+
+#login-btn {
+  margin-top: 5pt;
+  width: 100%;
+}
+
+#username {
+  margin-bottom: 5pt;
+}
+
+.data-wrapper {
+  width: 400px;
+  margin: auto;
+  margin-top: 50px;
+}
+
+.info-box {
+  padding: 10pt;
+  background-color: rgb(194, 194, 194);
+  border-radius: 0pt;
+  -webkit-box-shadow: 0px 5px 5px rgba(0, 0, 0, .75);
+  -moz-box-shadow: 0px 5px 5px rgba(0, 0, 0, .75);
+  box-shadow: 0px 5px 5px rgba(0, 0, 0, .75);
+}
+
+h2.headline {
+  padding-bottom: 10px;
+  border-bottom: 1px solid;
+  text-align: center;
+}
+
+h2.centered-text {
+  text-align: center;
+}
+
+h3.centered-text {
+  text-align: center;
+}
+
+.bscon.container {
+  background-color: white;
+  border-radius: 0pt;
+  margin-top: 15pt;
+  padding-top: 5pt;
+}
+
+.aps {
+  margin-top: 5pt;
+  width: 100%;
+  margin-bottom: 5pt;
+}
+
+.selector {
+  padding-right: 60pt !important;
 }
